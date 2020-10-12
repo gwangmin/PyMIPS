@@ -87,8 +87,3 @@ def bit_ext(bit, _len, sign=False):
         return handle_err(bit_ext, 'out of range')
     
     return bit
-
-
-if __name__ == '__main__':
-    result = IType(bit_to_dec('100011', signed=False), 0, 16, 4).inst_h
-    print(result)

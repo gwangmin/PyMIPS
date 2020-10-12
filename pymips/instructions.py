@@ -2,6 +2,8 @@
 Instructions
 '''
 
+from .util import dec_to_bit
+
 class RType:
     '''
     R type instruction composer
