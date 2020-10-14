@@ -3,6 +3,7 @@ PyMIPS
 '''
 
 # registers
+# decimal
 ZERO = 0
 AT = 1
 V0, V1 = 2, 3
@@ -141,8 +142,18 @@ def dec_to_hex(dec, _len):
 
 
 # instructions
+class MIPSInstruction:
+    def __init__(self):
+        self.inst_b, self.inst_h = None, None
+        
+    def encode_hex(self):
+        # 최종 인스트럭션을 8자리 16진수로(접두사 없이)
+        h = hex(int('0b' + self.inst_b, 2))[2:]
+        self.inst_h = ('0' * (8 - len(h))) + h
+
+
 # decode
-class RType:
+class RType(MIPSInstruction):
     '''
     R type instruction composer
     op(6) | rs(5) | rt(5) | rd(5) | shamt(5) | funct(6)
@@ -217,8 +228,7 @@ class RType:
         # 최종 인스트럭션을 2진수로(접두사 없이)
         self.inst_b = self.op_b + self.rs_b + self.rt_b + self.rd_b + self.shamt_b + self.funct_b
         # 최종 인스트럭션을 8자리 16진수로(접두사 없이)
-        h = hex(int('0b' + self.inst_b, 2))[2:]
-        self.inst_h = ('0' * (8 - len(h))) + h
+        self.encode_hex()
 
     def decode_hex(self, signed):
         '''
@@ -245,7 +255,7 @@ class RType:
 
 
 # decode
-class IType:
+class IType(MIPSInstruction):
     '''
     I type instruction composer
     op(6) | rs(5) | rt(5) | immediate(16)
@@ -310,8 +320,7 @@ class IType:
         # 최종 인스트럭션을 2진수로(접두사 없이)
         self.inst_b = self.op_b + self.rs_b + self.rt_b + self.im_b
         # 최종 인스트럭션을 8자리 16진수로(접두사 없이)
-        h = hex(int('0b' + self.inst_b, 2))[2:]
-        self.inst_h = ('0' * (8 - len(h))) + h
+        self.encode_hex()
 
     def decode_hex(self, signed):
         '''
@@ -334,7 +343,7 @@ class IType:
 
 
 # decode
-class JType:
+class JType(MIPSInstruction):
     '''
     J type instruction composer
     op(6) | addr(26)
@@ -388,8 +397,7 @@ class JType:
         # 최종 인스트럭션을 2진수로(접두사 없이)
         self.inst_b = self.op_b + self.addr_b
         # 최종 인스트럭션을 8자리 16진수로(접두사 없이)
-        h = hex(int('0b' + self.inst_b, 2))[2:]
-        self.inst_h = ('0' * (8 - len(h))) + h
+        self.encode_hex()
 
     def decode_hex(self):
         '''
@@ -406,6 +414,7 @@ class JType:
 
 
 if __name__ == "__main__":
-    #result = RType(0, S2, S3, S1, 0, bit_to_dec('100000', signed=False)).inst_h
-    result = dec_to_hex(-1945075712,8)
-    print(result)
+    i = IType()
+    i.fill_dec(bit_to_dec('001000'), T5, T4, -2)
+    i.encode()
+    print(i.inst_h)
